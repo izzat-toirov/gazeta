@@ -5,17 +5,21 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
-    // Prisma 7 uchun runtime ulanishni ta'minlash
+    // Hech qanday qo'shimcha parametr shart emas, Prisma DATABASE_URL ni env dan o'zi oladi
     super({
-      // @ts-ignore: Prisma 7 tiplari va NestJS ziddiyatini hal qilish uchun
-      datasourceUrl: process.env.DATABASE_URL,
-    });
+    // @ts-ignore: Prisma versiyalari o'rtasidagi tip ziddiyatini vaqtincha yopish uchun
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
+  });
   }
 
   async onModuleInit() {
     try {
       await this.$connect();
-      console.log('✅ Baza bilan ulanish muvaffaqiyatli!');
+      console.log('✅ Prisma 6: Baza bilan aloqa o’rnatildi');
       await this.seedSuperAdmin();
     } catch (error) {
       console.error('❌ Prisma ulanishda xato:', error);
@@ -28,25 +32,22 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   private async seedSuperAdmin() {
     const email = process.env.SUPER_ADMIN_EMAIL || 'admin@sirdaryohaqqiqati.uz';
-    try {
-      const adminExists = await this.user.findUnique({ where: { email } });
-      if (!adminExists) {
-        const hashedPassword = await bcrypt.hash(
-          process.env.SUPER_ADMIN_PASSWORD || 'SuperAdmin123!',
-          10,
-        );
-        await this.user.create({
-          data: {
-            email,
-            password: hashedPassword,
-            fullName: 'Super Admin',
-            role: 'SUPER_ADMIN' as any,
-          },
-        });
-        console.log('🚀 [SEED] Super Admin yaratildi!');
-      }
-    } catch (e) {
-      console.error('❌ Seed xatosi:', e.message);
+    const adminExists = await this.user.findUnique({ where: { email } });
+
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash(
+        process.env.SUPER_ADMIN_PASSWORD || 'SuperAdmin123!',
+        10,
+      );
+      await this.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          fullName: 'Super Admin',
+          role: 'SUPER_ADMIN' as any,
+        },
+      });
+      console.log('🚀 [SEED] Super Admin yaratildi!');
     }
   }
 }
