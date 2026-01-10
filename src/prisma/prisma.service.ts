@@ -5,14 +5,19 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
-    // Prisma 7 da config fayl bo'lsa, super() ga hech narsa berish shart emas
-    super();
+    // Prisma 7 uchun majburiy: ulanish manzilini super ichida aniq ko'rsatamiz
+    // TypeScript xatosi bermasligi uchun (options as any) ishlatamiz
+    super({
+      datasource: {
+        url: process.env.DATABASE_URL,
+      },
+    } as any);
   }
 
   async onModuleInit() {
     try {
       await this.$connect();
-      console.log('✅ Baza bilan aloqa o’rnatildi');
+      console.log('✅ Prisma 7: Baza bilan aloqa o’rnatildi');
       await this.seedSuperAdmin();
     } catch (error) {
       console.error('❌ Prisma ulanishda xato:', error);
@@ -27,6 +32,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const email = process.env.SUPER_ADMIN_EMAIL || 'admin@sirdaryohaqqiqati.uz';
     try {
       const adminExists = await this.user.findUnique({ where: { email } });
+
       if (!adminExists) {
         const hashedPassword = await bcrypt.hash(
           process.env.SUPER_ADMIN_PASSWORD || 'SuperAdmin123!',
