@@ -5,16 +5,20 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
-    // Prisma 7 da constructor ichida 'datasources' ishlatib bo'lmaydi.
-    // Super() ni bo'sh qoldiramiz, u avtomatik prisma.config.ts ni o'qiydi.
-    super();
+    // Prisma 7 da 'datasources' yoki 'datasource' to'g'ridan-to'g'ri qabul qilinmasligi mumkin.
+    // Eng xavfsiz yo'li - ulanishni majburiy ko'rsatish:
+    super({
+      // @ts-ignore - Prisma 7 tiplari bilan NestJS constructor ziddiyatini yopish uchun
+      datasource: {
+        url: process.env.DATABASE_URL,
+      },
+    });
   }
 
   async onModuleInit() {
     try {
-      // NestJS ishga tushganda ulanishni qo'lda amalga oshiramiz
       await this.$connect();
-      console.log('✅ Prisma 7: Baza bilan ulanish muvaffaqiyatli!');
+      console.log('✅ Baza bilan aloqa o’rnatildi');
       await this.seedSuperAdmin();
     } catch (error) {
       console.error('❌ Prisma ulanishda xato:', error);
@@ -29,6 +33,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const email = process.env.SUPER_ADMIN_EMAIL || 'admin@sirdaryohaqqiqati.uz';
     try {
       const adminExists = await this.user.findUnique({ where: { email } });
+
       if (!adminExists) {
         const hashedPassword = await bcrypt.hash(
           process.env.SUPER_ADMIN_PASSWORD || 'SuperAdmin123!',
