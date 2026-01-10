@@ -4,16 +4,17 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  // Prisma 7-da ko'pincha qo'shimcha sozlamasiz ham config faylni taniydi
   constructor() {
+    // Prisma 7 da agar constructor xato bersa, uni bo'sh qoldiring.
+    // U ulanishni prisma.config.ts dan avtomatik oladi.
     super();
   }
 
   async onModuleInit() {
     try {
-      // Ulanishni tekshirish
+      // Prisma 7 da ulanishni qo'lda ulaymiz
       await this.$connect();
-      console.log('✅ Prisma 7: Baza bilan aloqa o’rnatildi');
+      console.log('✅ Baza bilan aloqa o’rnatildi');
       await this.seedSuperAdmin();
     } catch (error) {
       console.error('❌ Prisma ulanishda xato:', error);
