@@ -20,7 +20,7 @@ export class CreateUserDto {
   @ApiProperty({
     description: 'User avatar URL',
     required: false,
-    example: 'https://example.com/avatar.jpg',
+    example: 'https://matrypqgmxvxgdhfgyjx.supabase.co/storage/v1/object/public/uploads/images/1768108855560-images.png',
   })
   @IsOptional()
   @IsString()

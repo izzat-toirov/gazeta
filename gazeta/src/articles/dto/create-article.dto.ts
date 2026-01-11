@@ -57,7 +57,7 @@ export class CreateArticleDto {
   @ApiProperty({
     description: 'Thumbnail image URL',
     required: false,
-    example: 'https://example.com/image.jpg',
+    example: 'https://matrypqgmxvxgdhfgyjx.supabase.co/storage/v1/object/public/uploads/images/1768109062837-images-4-.jfif',
   })
   @IsOptional()
   @IsUrl()

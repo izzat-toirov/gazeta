@@ -16,7 +16,7 @@ export class CreateNewspaperDto {
 
   @ApiProperty({
     description: 'PDF URL for the newspaper',
-    example: 'https://example.com/newspaper.pdf',
+    example: 'https://matrypqgmxvxgdhfgyjx.supabase.co/storage/v1/object/public/uploads/pdfs/1768108926765-Izzatbek-Toirov-resume-1-.pdf',
   })
   @IsString()
   @Length(1, 500)
@@ -25,7 +25,7 @@ export class CreateNewspaperDto {
   @ApiProperty({
     description: 'Cover image URL',
     required: false,
-    example: 'https://example.com/cover.jpg',
+    example: 'https://matrypqgmxvxgdhfgyjx.supabase.co/storage/v1/object/public/uploads/images/1768109062837-images-4-.jfif',
   })
   @IsOptional()
   @IsString()
